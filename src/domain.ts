@@ -19,6 +19,19 @@ export type PlayerStat = { player: Player; played: number; won: number; lost: nu
 export type PairStat = { pair: [Player, Player]; played: number; won: number; lost: number };
 export const isPlayer = (value: string): value is Player => (PLAYERS as readonly string[]).includes(value);
 
+/** Safely accept a persisted or test-imported match without trusting its shape. */
+export function normaliseMatch(value: unknown): Match | null {
+  if (!value || typeof value !== 'object') return null;
+  const raw = value as Partial<Match>;
+  if (!raw.id || !raw.playedAt || !raw.createdAt || !Array.isArray(raw.teamA) || !Array.isArray(raw.teamB) || raw.teamA.length !== 2 || raw.teamB.length !== 2 || !raw.teamA.every(isPlayer) || !raw.teamB.every(isPlayer) || new Set([...raw.teamA, ...raw.teamB]).size !== 4) return null;
+  const scoreA = raw.scoreA === undefined ? null : raw.scoreA;
+  const scoreB = raw.scoreB === undefined ? null : raw.scoreB;
+  if (!((scoreA === null || Number.isFinite(scoreA)) && (scoreB === null || Number.isFinite(scoreB)))) return null;
+  const winner = raw.winner ?? (typeof scoreA === 'number' && typeof scoreB === 'number' ? scoreA > scoreB ? 'A' : 'B' : undefined);
+  if (winner !== 'A' && winner !== 'B') return null;
+  return { id: raw.id, playedAt: raw.playedAt, createdAt: raw.createdAt, updatedAt: raw.updatedAt, teamA: raw.teamA as [Player, Player], teamB: raw.teamB as [Player, Player], scoreA, scoreB, winner, command: raw.command };
+}
+
 export function teamKey(team: readonly Player[]) { return [...team].sort().join('|'); }
 
 export function getStats(matches: Match[]) {

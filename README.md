@@ -25,6 +25,16 @@ The static production site is written to `dist/`.
 4. Check the editable result card and tap **Confirm result**.
 5. Export a JSON backup regularly from **History**. An Excel workbook with the standings, pairing matrix, and raw match ledger is also available.
 
+## Private test lab
+
+Open `/secret-test` directly to exercise the layout with realistic data without touching the live ledger. It can:
+
+- load a built-in 30-day fixture (165 games; five or six games per day);
+- download that fixture as JSON or Excel; and
+- upload an edited Court Ledger JSON backup or an Excel file containing a `Matches` sheet.
+
+The route is deliberately not linked from the app and never reads from or writes to the live IndexedDB ledger. It is a UI test tool, not an access-control boundary; anyone who knows the URL can open it.
+
 The app deliberately calculates standings and teammate-pair results from individual match records; it never keeps editable aggregate totals.
 
 ## Deploy to Cloudflare Pages
