@@ -18,7 +18,7 @@ function errorsFor(draft: Draft): Errors {
   else if (draft.scoreA !== null && draft.scoreB !== null) {
     if (!Number.isInteger(draft.scoreA) || !Number.isInteger(draft.scoreB) || draft.scoreA < 0 || draft.scoreB < 0 || draft.scoreA > 30 || draft.scoreB > 30) errors.scores = 'A badminton game score must be a whole number from 0 to 30.';
     else if (draft.scoreA === draft.scoreB) errors.scores = 'A completed game cannot end in a tie.';
-    else if (Math.max(draft.scoreA, draft.scoreB) < 21) errors.scores = 'The winning side must reach at least 21 points.';
+    else if (![7, 11, 15, 21].includes(Math.max(draft.scoreA, draft.scoreB))) errors.scores = 'The winning side must finish on 7, 11, 15, or 21 points.';
     else if ((draft.winner === 'A' && draft.scoreA < draft.scoreB) || (draft.winner === 'B' && draft.scoreB < draft.scoreA)) errors.winner = 'The selected winner must have the higher score.';
   }
   return errors;
