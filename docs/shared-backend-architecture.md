@@ -151,11 +151,18 @@ erDiagram
     MEMBERS ||--o{ AUDIT_EVENTS : acts
     MATCHES ||--o{ AUDIT_EVENTS : targets
     MEMBERS ||--o{ IDEMPOTENCY_KEYS : submits
+    PLAYERS ||--o{ MATCHES : participates
 
     MEMBERS {
         text id PK
         text display_name
         text role
+        integer active
+        text created_at
+    }
+    PLAYERS {
+        text id PK
+        text display_name
         integer active
         text created_at
     }
@@ -178,10 +185,10 @@ erDiagram
     MATCHES {
         text id PK
         text match_date
-        text team_a_player_1
-        text team_a_player_2
-        text team_b_player_1
-        text team_b_player_2
+        text team_a_player_1 FK
+        text team_a_player_2 FK
+        text team_b_player_1 FK
+        text team_b_player_2 FK
         integer score_a
         integer score_b
         text winner
@@ -211,7 +218,7 @@ erDiagram
     }
 ```
 
-The final migration may normalize players and match participants into separate tables if that materially improves validation or queries. Existing player identifiers must remain stable so historical matches are not coupled to editable display names.
+`members` are authenticated people allowed to operate the app. `players` are people who can appear in matches. They are deliberately separate: a scorer need not be one of the four players, and deactivating an account must not damage match history. Existing player identifiers remain stable so historical matches are not coupled to editable display names.
 
 ## Correctness controls
 
@@ -336,4 +343,3 @@ Stable match IDs, not row numbers, will identify Sheet records. Failed backup at
 - public user registration;
 - billing or paid services;
 - using the Sheet as the live transactional database.
-
