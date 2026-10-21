@@ -57,4 +57,6 @@ No Cloudflare environment variables are required for this personal local-storage
 
 ## Planned shared upgrade
 
-The next layer can replace only the storage adapter with Google Sheets API access. The match data shape and all statistics calculations can remain unchanged.
+The next phase introduces a Cloudflare Worker API and D1 as the canonical shared match database. IndexedDB will remain a local cache. Google Sheets backup and Google login are deliberately deferred to later phases.
+
+See [Shared backend architecture](docs/shared-backend-architecture.md) for the proposed API, security model, D1 schema, deployment boundaries, diagrams, and delivery sequence.
