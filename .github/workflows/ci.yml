@@ -22,3 +22,6 @@ jobs:
       - run: npm ci
       - run: npm audit --omit=dev
       - run: npm run build
+      - run: npm run worker:typecheck
+      - run: npm run worker:test
+      - run: npx wrangler pages functions build --outdir /tmp/court-ledger-functions

@@ -1,0 +1,36 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "court-ledger",
+  "pages_build_output_dir": "./dist",
+  "compatibility_date": "2026-10-25",
+  "vars": {
+    "APP_ORIGINS": "",
+    "COOKIE_NAME": "courtledger_session",
+    "OWNER_NAME": "Vikram"
+  },
+  "env": {
+    "preview": {
+      "vars": {
+        "APP_ORIGINS": "",
+        "COOKIE_NAME": "courtledger_session",
+        "OWNER_NAME": "Vikram"
+      },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "court-ledger-preview",
+          "database_id": "7b217d02-bc1b-4b5b-a254-39a9a6ebd0d9",
+          "migrations_dir": "worker/migrations"
+        }
+      ]
+    },
+    "production": {
+      "vars": {
+        "APP_ORIGINS": "",
+        "COOKIE_NAME": "courtledger_session",
+        "OWNER_NAME": "Vikram"
+      },
+      "d1_databases": []
+    }
+  }
+}

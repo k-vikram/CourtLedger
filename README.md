@@ -57,6 +57,19 @@ No Cloudflare environment variables are required for this personal local-storage
 
 ## Planned shared upgrade
 
-The next phase introduces a Cloudflare Worker API and D1 as the canonical shared match database. IndexedDB will remain a local cache. Google Sheets backup and Google login are deliberately deferred to later phases.
+The `feature/cloudflare-d1-api` branch introduces a Cloudflare Workers API through same-origin Pages Functions and D1 as the canonical shared match database. IndexedDB remains a local cache. Google Sheets backup and Google login are deliberately deferred to later phases.
 
 See [Shared backend architecture](docs/shared-backend-architecture.md) for the proposed API, security model, D1 schema, deployment boundaries, diagrams, and delivery sequence.
+
+### Local shared-backend verification
+
+```bash
+npm ci
+npm run worker:migrate:local
+npm run worker:typecheck
+npm run worker:test
+npm run build
+npx wrangler pages functions build --outdir /tmp/court-ledger-functions
+```
+
+Generate Vikram's owner recovery token with `npm run worker:generate-owner-token`. Save the raw token in a password manager and place only the displayed SHA-256 hash in a Git-ignored local `.dev.vars` file or the Cloudflare Pages Preview secret named `OWNER_RECOVERY_TOKEN_HASH`.

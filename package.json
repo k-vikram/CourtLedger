@@ -6,18 +6,33 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "shared:build": "VITE_SHARED_MODE=true npm run build",
+    "shared:dev": "npm run shared:build && wrangler pages dev dist --config wrangler.jsonc --d1 DB=7b217d02-bc1b-4b5b-a254-39a9a6ebd0d9",
+    "worker:dev": "wrangler dev --local --config worker/wrangler.jsonc",
+    "worker:typecheck": "tsc -p worker/tsconfig.json --noEmit",
+    "worker:test": "vitest run --config worker/vitest.config.ts",
+    "worker:migrate:local": "wrangler d1 migrations apply court-ledger-preview --local --env preview --config wrangler.jsonc",
+    "worker:generate-owner-token": "node worker/scripts/generate-owner-token.mjs"
   },
   "dependencies": {
-    "@vitejs/plugin-react": "latest",
-    "vite": "latest",
-    "typescript": "latest",
-    "react": "latest",
-    "react-dom": "latest"
+    "@vitejs/plugin-react": "6.1.2",
+    "vite": "8.3.5",
+    "typescript": "7.0.2",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "hono": "4.13.14",
+    "zod": "4.6.7"
   },
   "devDependencies": {
-    "@types/react": "latest",
-    "@types/react-dom": "latest",
-    "@types/node": "latest"
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@types/node": "26.6.5",
+    "@cloudflare/workers-types": "5.20261025.1",
+    "vitest": "5.0.5",
+    "wrangler": "4.152.0"
+  },
+  "overrides": {
+    "undici": "7.30.1"
   }
 }

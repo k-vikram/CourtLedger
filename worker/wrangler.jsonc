@@ -1,0 +1,22 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "court-ledger-api-staging",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-25",
+  "workers_dev": true,
+  "vars": {
+    "APP_ORIGINS": "http://127.0.0.1:5174,http://localhost:5174",
+    "COOKIE_NAME": "courtledger_session",
+    "OWNER_NAME": "Vikram"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "court-ledger-local",
+      "database_id": "local"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  }
+}

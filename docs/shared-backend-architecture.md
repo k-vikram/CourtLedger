@@ -1,7 +1,7 @@
 # CourtLedger shared backend architecture
 
-Status: approved direction, implementation not started  
-Current phase: Cloudflare Worker API and D1 only  
+Status: implementation in progress on `feature/cloudflare-d1-api`
+Current phase: Cloudflare Worker API and D1 only
 Deferred: Google Sheets backup, Google Sign-In, multi-group tenancy
 
 ## Purpose
@@ -27,20 +27,21 @@ flowchart LR
 
 ## Deployment topology
 
-Frontend and backend code live in the same Git repository but deploy as separate Cloudflare services.
+Frontend and backend code live in the same Git repository. The API is deployed as same-origin Cloudflare Pages Functions, which run on the Workers runtime and bind directly to D1. Same-origin `/api/*` routes keep secure session cookies reliable on iOS and other browsers that block third-party cookies.
 
 ```text
 CourtLedger repository
 ├── src/                    React PWA
 ├── public/                 manifest, service worker, icons
-├── worker/                 planned Worker API
+├── functions/api/          Pages Functions adapter for /api/*
+├── worker/                 Worker API, migrations, tests, and local config
 │   ├── src/
 │   ├── migrations/
 │   └── wrangler.jsonc
 └── docs/
 
 Cloudflare Pages            frontend deployment
-Cloudflare Worker           API deployment
+Cloudflare Pages Functions  same-origin API on the Workers runtime
 Cloudflare D1               shared relational storage
 ```
 
@@ -48,9 +49,9 @@ Production and preview resources must be isolated:
 
 | Environment | Frontend | API | Database | Secrets |
 | --- | --- | --- | --- | --- |
-| Local | Vite | Wrangler local runtime | Local D1 | `.dev.vars`, Git-ignored |
-| Preview | Pages preview | Staging Worker | Staging D1 | Staging secrets only |
-| Production | Pages `main` deployment | Production Worker | Production D1 | Production secrets only |
+| Local | Vite/Pages dev | Wrangler local runtime | Local D1 | `.dev.vars`, Git-ignored |
+| Preview | Pages preview | Preview Pages Functions | Preview D1 | Preview secrets only |
+| Production | Pages `main` deployment | Production Pages Functions | Production D1 | Production secrets only |
 
 A feature preview must never receive production database or production secret bindings.
 
@@ -108,6 +109,9 @@ Security properties:
 - Sessions expire and can be revoked individually or per member.
 - Losing browser data or changing devices requires a new invitation in this phase.
 - Invitation authentication is suitable for a small trusted group, but it does not prove a real-world identity as strongly as Google Sign-In.
+- Vikram can exchange a reusable, high-entropy owner recovery token for a new device session. Only its SHA-256 hash is stored as a Cloudflare secret.
+- The raw owner recovery token is never committed or logged and should be kept in Vikram's password manager.
+- Database triggers prevent the system owner from being demoted, deactivated, or deleted through application data changes.
 
 ## Authorization roles
 
@@ -244,7 +248,7 @@ The Worker repeats all important domain validation even when the UI already vali
 
 - exactly four distinct known, active players;
 - valid match date;
-- supported winning targets of 21, 15, 11, or 7;
+- supported winning targets of 7, 11, 15, or any score from 21 through 30 for deuce games;
 - score range and win conditions consistent with CourtLedger rules;
 - no tied completed score;
 - bounded string and request body sizes;
@@ -269,7 +273,7 @@ Rate limits reduce abuse but do not replace authentication or validation. Turnst
 
 No production secret belongs in Git, client JavaScript, Pages environment output, IndexedDB, logs, or screenshots.
 
-This phase may require a session-token pepper or signing secret. It is stored as a Cloudflare Worker Secret and accessed only through the Worker's runtime binding. Local development uses a Git-ignored `.dev.vars` file. Preview and production use different values.
+The owner recovery token hash is stored as a Cloudflare Pages secret and accessed only through the Function's runtime binding. Local development uses a Git-ignored `.dev.vars` file. Preview and production use different values.
 
 Google service-account credentials are explicitly deferred and will be added only with the Google Sheets backup phase.
 
