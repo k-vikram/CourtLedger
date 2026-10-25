@@ -12,6 +12,7 @@ export type Match = {
   command?: string;
   createdAt: string;
   updatedAt?: string;
+  revision?: number;
 };
 
 export type Draft = Omit<Match, 'id' | 'createdAt' | 'updatedAt'>;
@@ -29,7 +30,7 @@ export function normaliseMatch(value: unknown): Match | null {
   if (!((scoreA === null || Number.isFinite(scoreA)) && (scoreB === null || Number.isFinite(scoreB)))) return null;
   const winner = raw.winner ?? (typeof scoreA === 'number' && typeof scoreB === 'number' ? scoreA > scoreB ? 'A' : 'B' : undefined);
   if (winner !== 'A' && winner !== 'B') return null;
-  return { id: raw.id, playedAt: raw.playedAt, createdAt: raw.createdAt, updatedAt: raw.updatedAt, teamA: raw.teamA as [Player, Player], teamB: raw.teamB as [Player, Player], scoreA, scoreB, winner, command: raw.command };
+  return { id: raw.id, playedAt: raw.playedAt, createdAt: raw.createdAt, updatedAt: raw.updatedAt, revision: raw.revision, teamA: raw.teamA as [Player, Player], teamB: raw.teamB as [Player, Player], scoreA, scoreB, winner, command: raw.command };
 }
 
 export function teamKey(team: readonly Player[]) { return [...team].sort().join('|'); }
