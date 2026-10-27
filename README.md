@@ -47,6 +47,8 @@ The app deliberately calculates standings and teammate-pair results from individ
    - Node version: `22`
 4. Deploy. The app will receive a free `pages.dev` URL and can be installed from a mobile browser.
 
+`wrangler.toml` is the checked-in source of truth for the Pages output directory. Cloudflare must publish `dist/`, never the repository root: publishing the root serves the development `index.html`, which tries to load `/src/main.tsx` and produces a blank page in production browsers.
+
 No Cloudflare environment variables are required for this personal local-storage version.
 
 ## Data and privacy
